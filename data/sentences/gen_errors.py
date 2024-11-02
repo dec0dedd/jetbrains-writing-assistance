@@ -3,16 +3,16 @@ import random
 random.seed(42)
 
 
-def introduce_typos(sentence, error_rate=0.1):
+def introduce_typos(sentence, error_rate):
     words = sentence.split()
     for i in range(len(words)):
         if random.random() < error_rate:
-            # Randomly choose to misspell the word
-            if len(words[i]) > 1:  # Avoid one-letter words
-                typo_index = random.randint(0, len(words[i]) - 1)
-                typo_char = random.choice('abcdefghijklmnopqrstuvwxyz')
-                # Create a typo by replacing one character
-                words[i] = words[i][:typo_index] + typo_char + words[i][typo_index + 1:]
+            if (len(words[i])) <= 1:
+                continue
+
+            idx = random.randint(0, len(words[i]) - 1)
+            char = str(random.choice('abcdefghijklmnopqrstuvwxyz'))
+            words[i] = words[i][:idx] + char + words[i][idx + 1:]
     return ' '.join(words)
 
 

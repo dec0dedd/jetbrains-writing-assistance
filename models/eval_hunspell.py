@@ -3,10 +3,9 @@ import pandas as pd
 from tqdm import tqdm
 
 from datetime import datetime
-
-from Levenshtein import distance
-
 import os
+
+from utils import get_matrix, dist
 
 files = [
     'aspell.csv',
@@ -25,16 +24,16 @@ tqdm.pandas()
 
 
 def correction(x):
-    lst = hun.suggest(x['wrong'])
+    res = []
+    for word in x['wrong'].split():
+        lst = hun.suggest(word)
 
-    if len(lst):
-        return lst[0]
-    else:
-        return "wrong"
+        if len(lst):
+            res.append(lst[0].lower().replace(' ', ''))
+        else:
+            res.append("$")
 
-
-def dist(x):
-    return distance(x['wrong'], x['correct'])
+    return ' '.join(res)
 
 
 metrics = pd.DataFrame()
@@ -43,26 +42,39 @@ metrics = pd.DataFrame()
 for i, fn in enumerate(files):
     path = os.path.join('data', fn)
     df = pd.read_csv(path, index_col='id')
-    df = df.sample(min(df.shape[0], 1500), random_state=42)
+    df = df.sample(min(df.shape[0], 5000), random_state=42)
 
     start = datetime.now()
     df['correction'] = df.progress_apply(correction, axis=1)
     end = datetime.now()
 
     df['edit'] = df.apply(dist, axis=1)
-    df['ans'] = df['correct'] == df['correction']
     df['cor_len'] = df['correct'].apply(len)
+
+    t_pos, f_pos, t_neg, f_neg = [[], [], [], []]
+    for a, b, c, d in df.apply(get_matrix, axis=1):
+        t_pos.append(a), f_pos.append(b), t_neg.append(c), f_neg.append(d)
+    df['TP'], df['FP'], df['TN'], df['FN'] = t_pos, f_pos, t_neg, f_neg
+
+    print(df)
 
     m_df = pd.DataFrame(
         {
-            "latency": ((end-start)/df.shape[0]).total_seconds(),
-            "accuracy": df['ans'].sum()/df.shape[0],
+            "latency": ((end-start)/df.shape[0]).total_seconds()/df.shape[0],
             "lev_edit_mean": (df['edit']/df['cor_len']).mean(),
-            "lev_edit_median": (df['edit']/df['cor_len']).quantile(0.5)
-
+            "lev_edit_median": (df['edit']/df['cor_len']).quantile(0.5),
+            "TP": df['TP'].sum(),
+            "FP": df['FP'].sum(),
+            "TN": df['TN'].sum(),
+            "FN": df['FN'].sum(),
         },
         index=[0]
     )
+
+    m_df['precision'] = (m_df['TP'])/(m_df['TP']+m_df['FP'])
+    m_df['recall'] = (m_df['TP'])/(m_df['TP']+m_df['TN'])
+    m_df['f1'] = 2 * (m_df['precision']*m_df['recall'])/(m_df['precision']+m_df['recall'])
+    m_df['accuracy'] = (m_df['TP']+m_df['TN'])/(m_df['TP']+m_df['TN']+m_df['FN']+m_df['FP'])
 
     m_df['dataset'] = fn
     m_df['id'] = i
