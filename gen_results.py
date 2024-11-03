@@ -21,6 +21,8 @@ print(data_files)
 
 metrics = {}
 
+avg = pd.DataFrame()
+
 for file in metric_files:
     pth = os.path.join('metric_data', file)
     stm = Path(file).stem
@@ -28,7 +30,13 @@ for file in metric_files:
     df = pd.read_csv(pth, index_col='id').fillna(0)
     metrics[stm] = df
 
-print(metrics)
+    dx = df[['latency', 'precision', 'recall', 'f1', 'accuracy']].mean().to_frame().T
+    dx['model'] = stm
+    dx.set_index('model', inplace=True)
+
+    avg = pd.concat([avg, dx])
+
+avg.to_csv('average_values.csv', index=True)
 
 
 def generate_plot(mtr: str):
@@ -64,5 +72,3 @@ for mtr in metr2plot.keys():
     fig, axs = generate_plot(mtr)
     fig.suptitle(metr2plot[mtr])
     fig.savefig(os.path.join('plots', mtr + '.png'))
-
-plt.show()
