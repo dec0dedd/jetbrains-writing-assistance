@@ -48,7 +48,7 @@ for i, fn in enumerate(files):
 
     m_df = pd.DataFrame(
         {
-            "latency": ((end-start)/df.shape[0])*(10**6),
+            "latency": ((end-start)/df.shape[0])/(10**6),
             "lev_edit_mean": (df['edit']/df['cor_len']).mean(),
             "lev_edit_median": (df['edit']/df['cor_len']).quantile(0.5),
             "TP": df['TP'].sum(),
