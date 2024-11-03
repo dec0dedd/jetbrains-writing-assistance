@@ -42,6 +42,7 @@ def generate_plot(mtr: str):
                 metrics[k][metrics[k]['dataset'] == file][mtr].iloc[0]
             )
 
+        axs[i].set_title(file)
         sns.barplot(
             x=val_lst,
             y=mdl_lst,
@@ -52,17 +53,11 @@ def generate_plot(mtr: str):
     return fig, axs
 
 
-lat_fig, lat_axs = generate_plot('latency')
-
-
-lat_fig.suptitle('Latency [ms]')
-lat_fig.savefig('plots/latency.png')
-
 metr2plot = {
     'latency': 'Latency [ms]',
     'precision': 'Precision',
     'recall': 'Recall',
-    'f1': '$F_{1}$ score'
+    'f1': '$F_{1}$-score'
 }
 
 for mtr in metr2plot.keys():
