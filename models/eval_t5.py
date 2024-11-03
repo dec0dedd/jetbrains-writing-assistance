@@ -5,7 +5,7 @@ from tqdm import tqdm
 from utils import dist, get_matrix
 
 import os
-from datetime import datetime
+import time
 
 files = [
     'aspell.csv',
@@ -44,11 +44,11 @@ metrics = pd.DataFrame()
 for i, fn in enumerate(files):
     path = os.path.join('data', fn)
     df = pd.read_csv(path, index_col='id')
-    df = df.sample(min(df.shape[0], 50))
+    df = df.sample(min(df.shape[0], 50)).dropna(axis=0)
 
-    start = datetime.now()
+    start = time.time_ns()
     df['correction'] = df.progress_apply(correction, axis=1)
-    end = datetime.now()
+    end = time.time_ns()
 
     df['edit'] = df.apply(dist, axis=1)
     df['ans'] = df['correct'] == df['correction']
@@ -63,7 +63,7 @@ for i, fn in enumerate(files):
 
     m_df = pd.DataFrame(
         {
-            "latency": ((end-start)/df.shape[0]).total_seconds()/df.shape[0],
+            "latency": ((end-start)/df.shape[0])/(10**6),
             "lev_edit_mean": (df['edit']/df['cor_len']).mean(),
             "lev_edit_median": (df['edit']/df['cor_len']).quantile(0.5),
             "TP": df['TP'].sum(),

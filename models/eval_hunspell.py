@@ -2,7 +2,7 @@ import hunspell
 import pandas as pd
 from tqdm import tqdm
 
-from datetime import datetime
+import time
 import os
 
 from utils import get_matrix, dist
@@ -25,6 +25,12 @@ tqdm.pandas()
 
 def correction(x):
     res = []
+
+    if isinstance(x['wrong'], float):
+        print("WTF")
+        print(x)
+        print("==================")
+
     for word in x['wrong'].split():
         lst = hun.suggest(word)
 
@@ -42,11 +48,11 @@ metrics = pd.DataFrame()
 for i, fn in enumerate(files):
     path = os.path.join('data', fn)
     df = pd.read_csv(path, index_col='id')
-    df = df.sample(min(df.shape[0], 5000), random_state=42)
+    df = df.sample(min(df.shape[0], 5000), random_state=42).dropna(axis=0)
 
-    start = datetime.now()
+    start = time.time_ns()
     df['correction'] = df.progress_apply(correction, axis=1)
-    end = datetime.now()
+    end = time.time_ns()
 
     df['edit'] = df.apply(dist, axis=1)
     df['cor_len'] = df['correct'].apply(len)
@@ -60,7 +66,7 @@ for i, fn in enumerate(files):
 
     m_df = pd.DataFrame(
         {
-            "latency": ((end-start)/df.shape[0]).total_seconds()/df.shape[0],
+            "latency": ((end-start)/df.shape[0])/(10**6),
             "lev_edit_mean": (df['edit']/df['cor_len']).mean(),
             "lev_edit_median": (df['edit']/df['cor_len']).quantile(0.5),
             "TP": df['TP'].sum(),

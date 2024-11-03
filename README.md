@@ -34,3 +34,10 @@ This project aims to explore and evaluate existing spell checking tools on vario
 - .
 - .
 - .
+
+## 5. Steps to reproduce
+
+1) Install all the requirements with `pip install -r requirements.txt`
+2) Run `make parse_data` to generate all CSV files for testing models (or use already available data from `data/`)
+3) Run `make run_all` to run all models to generate metrics
+4) 
