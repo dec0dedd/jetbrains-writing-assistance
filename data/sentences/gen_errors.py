@@ -19,7 +19,7 @@ def introduce_typos(sentence, error_rate):
 res = ""
 with open("data/sentences/data.dat", 'r') as fl:
     for line in fl.readlines():
-        res += introduce_typos(line, 0.2) + "\n"
+        res += introduce_typos(line, 0.25) + "\n"
 
 with open("data/sentences/data_error.dat", "w") as fl:
     fl.write(res)
