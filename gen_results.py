@@ -65,6 +65,7 @@ metr2plot = {
     'latency': 'Latency [ms]',
     'precision': 'Precision',
     'recall': 'Recall',
+    'accuracy': 'Accuracy',
     'f1': '$F_{1}$-score'
 }
 

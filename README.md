@@ -64,7 +64,7 @@ Overview of Results (based on `average_values.csv`):
 
 ### 4.4 Recal
 
-![Recal](plots/recal.png "Recal")
+![Recal](plots/recall.png "Recal")
 
 - **Highest F1-score**: abc
 - **Lowest F1-score**: abc
