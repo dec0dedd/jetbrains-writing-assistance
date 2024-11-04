@@ -112,3 +112,4 @@ In order to run the code locally you need to have `Python 3.10` installed.
 4. Run `make run_all` to run all models to generate model metrics (or use already available metric data from `metrics/`)
 5. Re-create all plots based on new data with command `python gen_results.py`. Metric data will be available in CSV format in `metric_data/{model_name}.csv`, e.g. `metric_data/t5.csv` or `metric_data/textblob.csv`
 6. New plots based on generated results will be available in `plots/` with name `{metric}.png`, e.g. `latency.png`
+7. New CSV file with average metrics over all subsets will be available in `average_values.csv`
