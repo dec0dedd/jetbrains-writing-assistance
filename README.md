@@ -98,7 +98,7 @@ For applications needing real-time or faster spell-checking, `symspell` or `huns
         - worse recall,
     3. Possible improvements:
         - expand model's vocabulary with more domain-specific terms,
-        - parallelize code or rewrite some its' parts in C/C++ for better performance
+        - parallelize code or rewrite some of its' parts in C/C++ for better performance
 
 - `hunspell`:
     1. Strengths:
@@ -110,7 +110,7 @@ For applications needing real-time or faster spell-checking, `symspell` or `huns
         - low/moderate latency
     3. Possible improvements:
         - expand dictionary with more domain-specific vocabulary,
-        - add contextual spell checking
+        - incorporate contextual spell checking
 
 - `pyspell`:
     1. Strengths:
@@ -152,7 +152,7 @@ I've chosen accuracy, latency, precision, recall, and F1-score since they are co
 
 I've tracked each model's outputs on the prepared data and calculated the number of true positives, false positives, true negatives and false negatives to compute necessary metrics.
 
-## 6. Challenged encoutered
+## 6. Challenges encoutered
 
 - **Usage of `T5` model**: sometimes the model produced unexpected and nonsensical text. This issue probably stemmed from the model's reliance on the training data, which sometimes included phrases that, while grammatically correct, didn't make sense in context. For example, instead of suggesting a straightforward correction for a misspelled word, `T5` might generate a convoluted sentence that contained unrelated terms or altered the intended meaning entirely. Because of that I had to change my way of calculating confusion matrix with sets which is not as correct, but gives similar results.
 - **Gathering data**: due to issues with availability and quality, I couldn't find many good datasets to compare models on
