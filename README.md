@@ -35,18 +35,18 @@ Overview of Results (based on `average_values.csv`):
 
 | Tool | Avg. Latency [ms] | Avg. Precision | Avg. Recall | Avg. F1-score | Avg. Accuracy |
 |------|-------------------|----------------|-------------|---------------|---------------|
-| SymSpell | 2,915 | 0.53421 | 0.53425 | 0.53425 | 0.53423 | 0.54859 |
-| TextBlob | 63.54832 | 0.49863 | 0.49916 | 0.49889 | 0.53519 |
-| Hunspell | 45.54383 | 0.42285 | 0.42366 | 0.42325 | 0.47944 |
-| Pyspell | 113.17942 | 0.53382 | 0.53368 | 0.53375 | 0.54600 |
-| T5 | 2063.67870 | 0.18166 | 0.21569 | 0.19147 | 0.32281 |
+| SymSpell | 2.66614 | 0.53245 | 0.53249 | 0.53247 | 0.54795 |
+| TextBlob | 62.49305 | 0.50099 | 0.50152 | 0.50125 | 0.53602 |
+| Hunspell | 45.16548 | 0.42285 | 0.42366 | 0.42325 | 0.47944 |
+| Pyspell | 112.72535 | 0.53438 | 0.53424 | 0.53431 | 0.54620 |
+| T5 | 1553.49168 | 0.19368 | 0.23467 | 0.20449 | 0.33033 |
 
 ### 4.1 Latency
 
 ![Latency plot](plots/latency.png "Latency")
 
 - **Fastest models**: `symspell` has the lowest latency, with times ranging from ~0.3 seconds (`aspell.csv`, `wikipedia.csv`) to ~12 seconds (`sentences.csv`). `hunspell` also performs relatively quickly, with latencies generally around 20–25 seconds, except for `sentences.csv`, where latency spikes to ~141 seconds.
-- **Slowest models**: `T5` is consistently the slowest, with latencies exceeding 1800 seconds across datasets. This shows that T5’s deep learning-based approach, while more powerful, requires significantly more processing time.
+- **Slowest models**: `T5` is consistently the slowest, with latencies exceeding 1500 seconds across datasets. This shows that T5’s deep learning-based approach, while more powerful, requires significantly more processing time.
 
 For applications needing real-time or faster spell-checking, `symspell` or `hunspell` would be a good choice, whereas `T5` models may be more suitable where time is not a critical factor.
 
