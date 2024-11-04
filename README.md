@@ -75,6 +75,64 @@ For applications needing real-time or faster spell-checking, `symspell` or `huns
 - the `t5` model, though slower and less accurate, might be more appropiate for more subtle language tasks, given additional tuning,
 - `hunspell` offers support for more complex language structures like compounds and custom dictionaries which might make it a better choice in more sophisticated language tasks even though its' recall and F1 score aren't as high as `textxblob`,
 
+
+## 5. Strengths, weaknesses and possible improvements of each model
+
+- `symspell`:
+    1. Strengths:
+        - Low latency,
+        - good for common errors,
+    2. Weaknesses:
+        - limited vocabulary,
+        - low precision and recall on complex errors,
+    3. Possible improvements:
+        - expand the dictionary to include more complex terms,
+        - incorporate context-based corrections
+
+- `textblob`:
+    1. Strengths:
+        - higher level of language understanding,
+        - simple to use,
+    2. Weaknesses:
+        - higher latency than `symspell`, especially on bigger datasets,
+        - worse recall,
+    3. Possible improvements:
+        - expand model's vocabulary with more domain-specific terms,
+        - parallelize code or rewrite some its' parts in C/C++ for better performance
+
+- `hunspell`:
+    1. Strengths:
+        - extensive dictionary,
+        - allows customization (e.g. using user-defined dictionaries),
+        - not that complex to use,
+    2. Weaknesses:
+        - high false positive rate,
+        - low/moderate latency
+    3. Possible improvements:
+        - expand dictionary with more domain-specific vocabulary,
+        - add contextual spell checking
+
+- `pyspell`:
+    1. Strengths:
+        - good performance on basic datasets,
+        - simple to use,
+    2. Weaknesses:
+        - high latency,
+    3. Possible improvements:
+        - rewrite crucial algorithms in C/C++ for better performance,
+        - use different ML techniques for correcting more sophisticated errors,
+
+- `t5`:
+    1. Strengths:
+        - contextual understanding of text,
+        - flexibility (can be fine-tuned for more domain-specific language),
+    2. Weaknesses:
+        - very high latency,
+        - low performance on specific datasets,
+    3. Possible improvements:
+        - try distillation techniques to reduce model size while preserving most of its' performance,
+        - fine-tune with more data
+
 ## 5. Approach description
 
 ### 5.1 Dataset selection
@@ -98,7 +156,7 @@ I've tracked each model's outputs on the prepared data and calculated the number
 
 - **Usage of `T5` model**: sometimes the model produced unexpected and nonsensical text. This issue probably stemmed from the model's reliance on the training data, which sometimes included phrases that, while grammatically correct, didn't make sense in context. For example, instead of suggesting a straightforward correction for a misspelled word, `T5` might generate a convoluted sentence that contained unrelated terms or altered the intended meaning entirely. Because of that I had to change my way of calculating confusion matrix with sets which is not as correct, but gives similar results.
 - **Gathering data**: due to issues with availability and quality, I couldn't find many good datasets to compare models on
-- **Resource constraints**: Limited access to computational resources and data preprocessing tools slowed the data-gathering and model usage process, making it difficult to use large models and datasets.
+- **Resource constraints**: Limited access to computational resources and data preprocessing tools slowed the data-gathering and model usage process, making it difficult to use large models and datasets. Due to lack of computational resources I couldn't test the `T5` model on as much data.
 
 ## 7. Steps to reproduce results
 
@@ -112,4 +170,3 @@ In order to run the code locally you need to have `Python 3.10` installed.
 4. Run `make run_all` to run all models to generate model metrics (or use already available metric data from `metrics/`)
 5. Re-create all plots based on new data with command `python gen_results.py`. Metric data will be available in CSV format in `metric_data/{model_name}.csv`, e.g. `metric_data/t5.csv` or `metric_data/textblob.csv`
 6. New plots based on generated results will be available in `plots/` with name `{metric}.png`, e.g. `latency.png`
-7. New CSV file with average metrics over all subsets will be available in `average_values.csv`
