@@ -102,6 +102,8 @@ I've tracked each model's outputs on the prepared data and calculated the number
 
 ## 7. Steps to reproduce results
 
+In order to run the code locally you need to have `Python 3.10` installed.
+
 1. Create a virtual environment with `venv` or `conda`
 2. Copy the repository with `git clone https://github.com/dec0dedd/jetbrains-writing-assistance.git`
 2. Install all the required dependencies with `pip install -r requirements.txt`
