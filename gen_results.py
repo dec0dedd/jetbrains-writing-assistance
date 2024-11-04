@@ -17,8 +17,6 @@ data_files = [
     f for f in os.listdir('data') if os.path.isfile(os.path.join('data', f))
 ]
 
-print(data_files)
-
 metrics = {}
 
 avg = pd.DataFrame()
@@ -73,3 +71,5 @@ for mtr in metr2plot.keys():
     fig, axs = generate_plot(mtr)
     fig.suptitle(metr2plot[mtr])
     fig.savefig(os.path.join('plots', mtr + '.png'))
+
+print(metrics)

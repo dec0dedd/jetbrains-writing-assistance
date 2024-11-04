@@ -1,6 +1,6 @@
 # Improving Writing Assistance at JetBrains AI
 
-This project aims to explore and evaluate existing spell checking tools on various data.
+This project aims to explore and evaluate existing spell checking tools on various datasets.
 
 ## 1. Data sources
 
@@ -18,7 +18,7 @@ This project aims to explore and evaluate existing spell checking tools on vario
 1. [pyspellchecker](https://github.com/barrust/pyspellchecker?tab=readme-ov-file) - python-based spell-checking tool that utilizes Levenshtein distance to identify and suggest corrections for misspelled words.
 2. [Hunspell](https://github.com/hunspell/hunspell) -  an open-source spell checker widely used in applications like LibreOffice, OpenOffice, Firefox, and Chrome. It supports complex languages and morphological structures, handling compound words and allowing custom dictionaries. For Python intergration, I've used library `pyhunspell` available [here](https://github.com/pyhunspell/pyhunspell).
 3. [Vennify's T5 Grammar Correction transformer](https://huggingface.co/vennify/t5-base-grammar-correction) - a T5-based transformer model trained specifically for grammar correction, available on Hugging Face. This model leverages deep learning to handle a wide range of language errors, making it suitable for complex correction tasks that go beyond basic spelling.
-4. [SymSpell](https://github.com/wolfgarbe/SymSpell) - Known for its speed, SymSpell uses a dictionary-based approach to provide fast, memory-efficient spell correction. It’s ideal for large datasets or applications where rapid error detection and correction are critical, as it optimizes search through frequency-based suggestions.
+4. [SymSpell](https://github.com/wolfgarbe/SymSpell) - known for its speed, SymSpell uses a dictionary-based approach to provide fast, memory-efficient spell correction. It’s ideal for large datasets or applications where rapid error detection and correction are critical.
 5. [TextBlob](https://github.com/sloria/TextBlob) - a Python library for processing textual data, providing spell-checking as part of its toolkit.
 
 ## 3. Metrics
@@ -45,37 +45,62 @@ Overview of Results (based on `average_values.csv`):
 
 ![Latency plot](plots/latency.png "Latency")
 
-- **Fastest models**: `textblob`, `hunspell`, `pyspellchecker`, and `symspell` have extremely low latency (milliseconds) across all datasets, making them suitable for applications where speed is essential.
-- **Slowest models**: 
+- **Fastest models**: `symspell` has the lowest latency, with times ranging from ~0.3 seconds (`aspell.csv`, `wikipedia.csv`) to ~12 seconds (`sentences.csv`). `hunspell` also performs relatively quickly, with latencies generally around 20–25 seconds, except for `sentences.csv`, where latency spikes to ~141 seconds.
+- **Slowest models**: `T5` is consistently the slowest, with latencies exceeding 1800 seconds across datasets. This shows that T5’s deep learning-based approach, while more powerful, requires significantly more processing time.
+
+For applications needing real-time or faster spell-checking, `symspell` or `hunspell` would be a good choice, whereas `T5` models may be more suitable where time is not a critical factor.
 
 ### 4.2 Accuracy
 
 ![Accuracy plot](plots/accuracy.png "Accuracy")
 
-- **Highest accuracy models**: abc 
-- **Lowest accuracy models**: abc
+- **Highest accuracy models**: `textblob` achieves the highest accuracy on `sentences.csv` (0.82) and is generally competitive on other datasets. `symspell` also performs well, especially on the same dataset, reaching ~0.73 accuracy.
+- **Lowest accuracy models**: `T5` has the lowest accuracy in most datasets, with the highest on `sentences.csv` (0.73) but struggling on `aspell`, `birkbeck`, `holbrook`, and `wikipedia` datasets, likely due to more complex errors.
 
-### 4.3 Precision
+### 4.3 Precision, recall and $F_{1}$-score
 
 ![Precision plot](plots/precision.png "Precision")
 
-- **Highest precision models**: abc
-- **Lowest precision models**: abcge
+![Recall plot](plots/recall.png "Recall")
 
-### 4.4 Recal
+![F1-score plot](plots/f1.png "F1-score")
 
-![Recal](plots/recall.png "Recal")
+- **Top performers**: `symspell`, `textblob`, and `pyspell` perform better in precision and recall across most datasets. `symspell` shows balanced precision and recall, especially in `sentences.csv`, where it achieves over 0.8 in both metrics.
 
-- **Highest F1-score**: abc
-- **Lowest F1-score**: abc
+- **Low scoring models**: `T5` performs poorly in datasets like `aspell.csv`, `birkbeck.csv`, and `holbrook.csv`, with very low precision and recall. However, it performs better on `sentences.csv` (precision ~0.81), possibly because this dataset has less complex corrections.
 
-### $F_{1}$-score
+### Overall summary
 
-![F_{1}-score](plots/f1.png "")
+- if looking for speed and accuracy `symspell` and `textblob` seem like the best choices,
+- the `t5` model, though slower and less accurate, might be more appropiate for more subtle language tasks, given additional tuning,
+- `hunspell` offers support for more complex language structures like compounds and custom dictionaries which might make it a better choice in more sophisticated language tasks even though its' recall and F1 score aren't as high as `textxblob`,
 
-- **abc**: def
+## 5. Approach description
 
-## 5. Steps to reproduce results
+### 5.1 Dataset selection
+
+In order to test the models I've chosen a diverse set of different well-known corpora as well as synthetic datasets created by randomly introducing errors. This variety was crucial for assessing how each model performed under different conditions.
+
+### 5.2 Model selection
+
+I selected several popular spell-checking tools like `pyspellchecker`, `Hunspell`, `SymSpell`, `TextBlob`, and `Vennify’s T5 Grammar Correction transformer`. Each of these tools has different strengths, from basic spell-checking to handling complex languages, allowing for a comprehensive comparison.
+
+### 5.3 Metrics for evaluation
+
+I've chosen accuracy, latency, precision, recall, and F1-score since they are commonly employed in research across various fields, particularly in machine learning, natural language processing, and spell-checking systems.
+
+
+### 5.4 Implementation
+
+I've tracked each model's outputs on the prepared data and calculated the number of true positives, false positives, true negatives and false negatives to compute necessary metrics.
+
+## 6. Challenged encoutered
+
+- **Usage of `T5` model**: sometimes the model produced unexpected and nonsensical text. This issue probably stemmed from the model's reliance on the training data, which sometimes included phrases that, while grammatically correct, didn't make sense in context. For example, instead of suggesting a straightforward correction for a misspelled word, `T5` might generate a convoluted sentence that contained unrelated terms or altered the intended meaning entirely. Because of that I had to change my way of calculating confusion matrix with sets which is not as correct, but gives similar results.
+- **Gathering data**: due to issues with availability and quality, I couldn't find many good datasets to compare models on
+- **Resource constraints**: Limited access to computational resources and data preprocessing tools slowed the data-gathering and model usage process, making it difficult to use large models and datasets.
+
+## 7. Steps to reproduce results
 
 1. Create a virtual environment with `venv` or `conda`
 2. Copy the repository with `git clone https://github.com/dec0dedd/jetbrains-writing-assistance.git`
